@@ -1,0 +1,30 @@
+# Build and run the docker container:
+# $ docker build -f Dockerfile_code_checkers . -t 'code_checkers'
+# $ docker run --rm -it -v $PWD:/model-data-system code_checkers <command>
+# for example: docker run --rm -it -v $PWD:/model-data-system code_checkers black --check .
+
+FROM python:3.9.13
+
+# https://stackoverflow.com/questions/41935435/understanding-volume-instruction-in-dockerfile 
+VOLUME /locallibrary
+
+# https://stackoverflow.com/questions/55108649/what-is-app-working-directory-for-a-dockerfile 
+# WORKDIR will create this directory within the container if it does not exist
+WORKDIR /locallibrary
+
+COPY requirements.txt .
+COPY requirements-test.txt .
+
+RUN apt-get update --quiet --yes \
+    && apt-get install \
+    --no-install-recommends \
+    --yes \
+    libmemcached-dev
+
+RUN pip install \
+    --disable-pip-version-check \
+    --no-cache-dir \
+    -r requirements.txt \
+    -r requirements-test.txt
+
+CMD [ "/bin/bash" ]

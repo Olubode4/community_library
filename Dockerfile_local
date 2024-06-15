@@ -1,0 +1,23 @@
+FROM python:3.9.13 AS django_no_entrypoint
+
+RUN apt-get update --quiet --yes  \
+    && apt-get install -y jq  \
+    && apt-get install \
+    --no-install-recommends \
+    --yes graphviz
+
+COPY requirements.txt requirements-test.txt /.build-deps/
+RUN pip install \
+    --disable-pip-version-check \
+    --no-cache-dir \
+    -r /.build-deps/requirements.txt \
+    -r /.build-deps/requirements-test.txt
+RUN rm -fr /.build-deps/
+
+EXPOSE 8001
+WORKDIR /locallibrary
+
+FROM django_no_entrypoint AS django
+
+ENTRYPOINT ["python", "manage.py"]
+CMD ["runserver", "0.0.0.0:8001"]

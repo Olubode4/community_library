@@ -1,0 +1,57 @@
+# Note: in our experience, setting `tty: true` or `stdin_open: true` on a service
+# results in logs being dropped from `docker-compose logs` intermittently. For this
+# reason we recommend NOT enabling these settings. They should not be necessary anyway;
+# when using a service via `docker-compose run` an interactive shell is always enabled.
+version: "3.6"
+services:
+  django: &django-base
+    build:
+      context: .
+      target: django
+      dockerfile: Dockerfile_local
+    restart: on-failure
+    volumes:
+      - .:/locallibrary:cached
+    depends_on:
+      - postgres_lib
+      - redis
+    networks:
+      - main
+    ports:
+      - 8001:8001
+    env_file:
+      - variables/django_local.env
+    stdin_open: true
+    tty: true
+
+  postgres_lib:
+    image: postgres:14.6
+    restart: unless-stopped
+    environment:
+      # Database name, user, and password taken from settings_local.py.example
+      POSTGRES_DB: local_library_db
+      POSTGRES_USER: library_user
+#      POSTGRES_PASSWORD: um?xo[X3_|n"FppwR{@v7u/t)
+      POSTGRES_PASSWORD: super123456
+    volumes:
+      - ./bin:/locallibrary/bin:cached
+    hostname: postgres_lib
+    ports:
+      - "127.0.0.1:54321:5432"
+    networks:
+      - main
+  redis:
+    image: redis:latest
+    restart: unless-stopped
+    hostname: redis
+    networks:
+      - main
+  code_checkers:
+    build:
+      context: .
+      dockerfile: Dockerfile_code_checkers
+    volumes:
+      - .:/locallibrary:cached
+    image: code_checkers:latest
+networks:
+  main:

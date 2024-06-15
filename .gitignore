@@ -1,0 +1,12 @@
+*/*/__pycache__/
+*/__pycache__/
+db.sqlite3
+/.idea/
+*/.coverage
+.coverage
+.DS_Store
+# Text backup files
+*.bak
+
+# Database
+*.sqlite3

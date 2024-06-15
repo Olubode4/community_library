@@ -1,0 +1,9 @@
+dj-inmemorystorage==2.0.0
+freezegun==0.3.14
+ipdb
+mypy
+pylint==2.14.5
+pytest==7.2.0
+pytest-django==4.5.2
+flake8==5.0.4
+setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability

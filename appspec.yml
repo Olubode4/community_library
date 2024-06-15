@@ -1,0 +1,41 @@
+version: 0.0
+os: linux
+files: 
+  - source: /
+    destination: /home/ubuntu/locallibrary
+permissions:
+  - object: /home/ubuntu/locallibrary
+    owner: ubuntu
+    group: ubuntu
+hooks:
+  BeforeInstall:
+      - location: scripts/clean_instance.sh
+        timeout: 300
+        runas: ubuntu
+  AfterInstall:
+#      - location: scripts/instance_os_dependencies.sh
+      - location: scripts/instance_os_dependencies_new.sh
+        timeout: 300
+        runas: ubuntu
+      - location: scripts/python_dependencies.sh
+        timeout: 300
+        runas: ubuntu
+#      - location: scripts/gunicorn.sh
+      - location: scripts/gunicorn_new.sh
+        timeout: 300
+        runas: ubuntu
+#      - location: scripts/nginx.sh
+      - location: scripts/nginx_new.sh
+        timeout: 300
+        runas: ubuntu
+  ApplicationStop:
+      - location: scripts/stop_app.sh
+        timeout: 300
+        runas: ubuntu
+  ApplicationStart:
+#      - location: scripts/start_app.sh
+      - location: scripts/start_app_new.sh
+        timeout: 300
+        runas: ubuntu
+  
+  
